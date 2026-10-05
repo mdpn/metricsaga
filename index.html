@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MetricSaga: product analytics for product managers</title>
+<meta name="description" content="MetricSaga teaches product analytics to product managers at tech companies, from a first funnel to experiment design.">
+
+<!-- Data layer is created before any tag manager loads. -->
+<script>window.dataLayer = window.dataLayer || [];</script>
+<!-- ITERATION 2: paste the Google Tag Manager <head> snippet here. -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #14233B;
+    --fjord: #2F5D8A;
+    --glacier: #E6EDF3;
+    --paper: #FAFCFD;
+    --amber: #E0A12B;
+    --moss: #2F7A5E;
+    --muted: #55657A;
+    --line: #C9D5E0;
+    --display: "Bricolage Grotesque", "Trebuchet MS", "Segoe UI", sans-serif;
+    --body: "Instrument Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--glacier);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem; }
+  a { color: var(--fjord); }
+  :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+
+  .site-head { padding: 1.5rem 0; }
+  .brand {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  /* Hero */
+  .hero { display: grid; gap: 2.5rem; padding: 2rem 0 4.5rem; align-items: start; }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.5rem, 6.2vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin: 0 0 1.25rem;
+    max-width: 12ch;
+  }
+  .hero p { max-width: 34rem; margin: 0 0 1.75rem; color: var(--muted); font-size: 1.1875rem; }
+
+  .btn {
+    display: inline-block;
+    font: 600 1.0625rem var(--body);
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--fjord); border-color: var(--fjord); }
+  .btn-quiet { background: transparent; color: var(--ink); }
+  .btn-quiet:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* Live tracking panel: the one loud element on the page */
+  .panel {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 1rem;
+    padding: 1.75rem;
+  }
+  .panel h2 { font-family: var(--display); font-size: 1.375rem; margin: 0 0 0.375rem; letter-spacing: -0.01em; }
+  .panel > p { margin: 0 0 1.5rem; color: #B5C4D4; font-size: 0.9375rem; }
+  .funnel { list-style: none; margin: 0 0 1.5rem; padding: 0; }
+  .funnel li {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 0 0 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid #3B4F6B;
+    border-radius: 0.375rem;
+    font-size: 0.9375rem;
+    color: #B5C4D4;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .funnel li:nth-child(1) { width: 100%; }
+  .funnel li:nth-child(2) { width: 88%; }
+  .funnel li:nth-child(3) { width: 76%; }
+  .funnel li:nth-child(4) { width: 64%; }
+  .funnel li.done { background: var(--amber); border-color: var(--amber); color: var(--ink); font-weight: 600; }
+  .funnel .state { font-size: 0.8125rem; }
+  .log-title { font-size: 0.9375rem; font-weight: 600; margin: 0 0 0.5rem; }
+  .log {
+    list-style: none; margin: 0; padding: 0.75rem;
+    background: #0D1829;
+    border-radius: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    max-height: 11.5rem;
+    overflow-y: auto;
+  }
+  .log li { margin: 0 0 0.375rem; word-break: break-word; }
+  .log .name { color: var(--amber); }
+  .log .params { color: #9FB3C8; }
+
+  /* Sections */
+  .band { background: var(--paper); padding: 4.5rem 0; }
+  .band h2, .signup h2 {
+    font-family: var(--display);
+    font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+  }
+  .lede { color: var(--muted); max-width: 38rem; margin: 0 0 2rem; }
+
+  .levels { display: grid; gap: 0.75rem; margin: 0 0 1.5rem; }
+  .level {
+    text-align: left;
+    font: inherit;
+    color: var(--ink);
+    background: var(--paper);
+    border: 2px solid var(--line);
+    border-radius: 0.75rem;
+    padding: 1.125rem 1.25rem;
+    cursor: pointer;
+  }
+  .level:hover { border-color: var(--fjord); }
+  .level[aria-pressed="true"] { border-color: var(--ink); background: var(--glacier); }
+  .level strong { display: block; font-family: var(--display); font-size: 1.25rem; }
+  .level span { color: var(--muted); font-size: 0.9375rem; }
+  .syllabus {
+    border-left: 4px solid var(--amber);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    min-height: 7rem;
+  }
+  .syllabus h3 { font-family: var(--display); font-size: 1.25rem; margin: 0 0 0.5rem; }
+  .syllabus ul { margin: 0; padding-left: 1.125rem; }
+  .syllabus li { margin-bottom: 0.25rem; }
+
+  .signup { padding: 4.5rem 0; }
+  .signup form { display: flex; flex-wrap: wrap; gap: 0.75rem; max-width: 34rem; }
+  .signup label { flex: 1 0 100%; font-weight: 600; }
+  .signup input {
+    flex: 1 1 14rem;
+    font: inherit;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--ink);
+    border-radius: 0.5rem;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .form-note { margin: 0.875rem 0 0; min-height: 1.5rem; font-weight: 500; }
+  .form-note.ok { color: var(--moss); }
+  .form-note.err { color: #A8321F; }
+
+  .site-foot { border-top: 1px solid var(--line); padding: 2rem 0 3rem; }
+  .foot-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; }
+  .foot-row p { margin: 0 auto 0 0; color: var(--muted); font-size: 0.9375rem; }
+  .foot-row .btn { padding: 0.5rem 1rem; font-size: 0.9375rem; }
+
+  @media (min-width: 56rem) {
+    .hero { grid-template-columns: 1.1fr 0.9fr; gap: 3.5rem; padding-top: 3.5rem; }
+    .levels { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .funnel li { transition: none; }
+  }
+</style>
+</head>
+
+<body>
+<!-- ITERATION 2: paste the Google Tag Manager <noscript> snippet here. -->
+
+<header class="site-head">
+  <div class="wrap"><a class="brand" href="/">MetricSaga</a></div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <h1>Learn to measure the products you build.</h1>
+      <p>MetricSaga teaches product analytics to product managers at tech companies, from a first funnel to experiment design. This page tracks itself, so you can watch how measurement works while you read.</p>
+      <a class="btn" href="#levels" id="cta-start">Choose your level</a>
+    </div>
+
+    <aside class="panel" aria-labelledby="panel-title">
+      <h2 id="panel-title">What this page has recorded</h2>
+      <p>Your visit so far, as a funnel. Each step fills in when you do it.</p>
+      <ol class="funnel" id="funnel">
+        <li data-step="page_view"><span>Opened the page</span><span class="state">Not yet</span></li>
+        <li data-step="cta_click"><span>Chose to start</span><span class="state">Not yet</span></li>
+        <li data-step="level_select"><span>Picked a level</span><span class="state">Not yet</span></li>
+        <li data-step="newsletter_signup"><span>Joined the newsletter</span><span class="state">Not yet</span></li>
+      </ol>
+      <p class="log-title">Events sent to the data layer</p>
+      <ul class="log" id="log" aria-live="polite"></ul>
+    </aside>
+  </div>
+
+  <section class="band" id="levels">
+    <div class="wrap">
+      <h2>Start where you are</h2>
+      <p class="lede">Three levels, each building on the one before. Pick one to see what it covers.</p>
+      <div class="levels">
+        <button class="level" type="button" data-level="beginner" aria-pressed="false">
+          <strong>Foundations</strong><span>New to product analytics</span>
+        </button>
+        <button class="level" type="button" data-level="intermediate" aria-pressed="false">
+          <strong>Diagnosis</strong><span>You read dashboards and want to find causes</span>
+        </button>
+        <button class="level" type="button" data-level="advanced" aria-pressed="false">
+          <strong>Decisions</strong><span>You run experiments and own a metric</span>
+        </button>
+      </div>
+      <div class="syllabus" id="syllabus" aria-live="polite">
+        <p>No level picked yet. Choose one above to see its topics.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="signup">
+    <div class="wrap">
+      <h2>One lesson a week, by email</h2>
+      <p class="lede">A short, practical lesson on one metric or method, written for working product managers.</p>
+      <form id="signup-form" novalidate>
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+        <button class="btn" type="submit">Join the newsletter</button>
+      </form>
+      <p class="form-note" id="form-note" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p>MetricSaga. Built in public as a product analytics project.</p>
+    <button class="btn btn-quiet" type="button" id="share-copy">Copy link</button>
+    <a class="btn btn-quiet" id="share-linkedin" data-share="linkedin" target="_blank" rel="noopener" href="#">Share on LinkedIn</a>
+    <a class="btn btn-quiet" id="repo-link" target="_blank" rel="noopener" href="#" hidden>See the tracking code</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // ---- Config -------------------------------------------------------------
+  // Paste your GitHub repo URL here once it exists; the footer link then appears.
+  var REPO_URL = "";
+  var PAGE = { page_name: "home", page_type: "landing", site_section: "marketing" };
+
+  var SYLLABUS = {
+    beginner: { title: "Foundations", topics: [
+      "Events, properties and users: how tracking data is shaped",
+      "The AARRR funnel and what each stage measures",
+      "Reading a conversion funnel without fooling yourself"] },
+    intermediate: { title: "Diagnosis", topics: [
+      "Cohorts and retention curves",
+      "Segmentation: finding who a change helped or hurt",
+      "Choosing a north star metric and its input metrics"] },
+    advanced: { title: "Decisions", topics: [
+      "Experiment design, sample size and guardrail metrics",
+      "Attribution and incrementality",
+      "Metric trees: linking team goals to company outcomes"] }
+  };
+
+  // ---- Tracking -----------------------------------------------------------
+  // Every interaction goes through track(). It pushes one object to the data
+  // layer; in iteration 2, GTM reads that and forwards it to GA4 and PostHog.
+  // No personal data (such as the email address) is ever pushed.
+  var logEl = document.getElementById("log");
+  var funnelEl = document.getElementById("funnel");
+
+  function track(name, params) {
+    params = params || {};
+    var payload = { event: name };
+    var k;
+    for (k in PAGE) { payload[k] = PAGE[k]; }
+    for (k in params) { payload[k] = params[k]; }
+    window.dataLayer.push(payload);
+    showInPanel(name, params);
+  }
+
+  function showInPanel(name, params) {
+    var li = document.createElement("li");
+    var n = document.createElement("span");
+    n.className = "name";
+    n.textContent = name;
+    li.appendChild(n);
+    var keys = Object.keys(params);
+    if (keys.length) {
+      var p = document.createElement("span");
+      p.className = "params";
+      p.textContent = "  " + keys.map(function (key) { return key + ": " + params[key]; }).join(", ");
+      li.appendChild(p);
+    }
+    logEl.appendChild(li);
+    logEl.scrollTop = logEl.scrollHeight;
+
+    var step = funnelEl.querySelector('[data-step="' + name + '"]');
+    if (step && !step.classList.contains("done")) {
+      step.classList.add("done");
+      step.querySelector(".state").textContent = "Done";
+    }
+  }
+
+  // 1. Page view
+  track("page_view", { page_title: document.title });
+
+  // 2. Hero call to action
+  document.getElementById("cta-start").addEventListener("click", function () {
+    track("cta_click", { cta_id: "hero_choose_level", cta_text: this.textContent.trim() });
+  });
+
+  // 3. Level picker
+  var levelButtons = document.querySelectorAll(".level");
+  var syllabusEl = document.getElementById("syllabus");
+  Array.prototype.forEach.call(levelButtons, function (btn) {
+    btn.addEventListener("click", function () {
+      var level = btn.getAttribute("data-level");
+      Array.prototype.forEach.call(levelButtons, function (b) {
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+      });
+      var s = SYLLABUS[level];
+      syllabusEl.innerHTML = "";
+      var h = document.createElement("h3");
+      h.textContent = s.title + " covers";
+      var ul = document.createElement("ul");
+      s.topics.forEach(function (t) {
+        var li = document.createElement("li");
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+      syllabusEl.appendChild(h);
+      syllabusEl.appendChild(ul);
+      track("level_select", { level: level });
+    });
+  });
+
+  // 4. Newsletter signup. There is no backend yet, so nothing is stored.
+  var form = document.getElementById("signup-form");
+  var note = document.getElementById("form-note");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("email").value.trim();
+    var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!valid) {
+      note.className = "form-note err";
+      note.textContent = "That email address looks incomplete. Check it and try again.";
+      track("newsletter_signup_error", { error_type: "invalid_email" });
+      return;
+    }
+    note.className = "form-note ok";
+    note.textContent = "Thanks. The newsletter has not launched yet, so your address was not saved.";
+    track("newsletter_signup", { form_id: "footer_newsletter" });
+    form.reset();
+  });
+
+  // 5. Share
+  var pageUrl = window.location.href.split("#")[0];
+  var copyBtn = document.getElementById("share-copy");
+  copyBtn.addEventListener("click", function () {
+    var done = function () {
+      copyBtn.textContent = "Link copied";
+      setTimeout(function () { copyBtn.textContent = "Copy link"; }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pageUrl).then(done, function () {});
+    }
+    track("share_click", { method: "copy_link" });
+  });
+  var li = document.getElementById("share-linkedin");
+  li.href = "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(pageUrl);
+  li.addEventListener("click", function () {
+    track("share_click", { method: "linkedin" });
+  });
+
+  // 6. Outbound links (anything leaving this site that is not a share button)
+  var repo = document.getElementById("repo-link");
+  if (REPO_URL) { repo.href = REPO_URL; repo.hidden = false; }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("a[href]") : null;
+    if (!a || a.hasAttribute("data-share")) { return; }
+    if (a.hostname && a.hostname !== window.location.hostname) {
+      track("outbound_click", { link_url: a.href, link_text: a.textContent.trim() });
+    }
+  });
+})();
+</script>
+</body>
+</html>
